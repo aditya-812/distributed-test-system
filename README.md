@@ -1,6 +1,46 @@
 # Distributed Test System
 
-A distributed automated test system built with RabbitMQ, Celery, and Docker that demonstrates task routing, worker isolation, and concurrent execution with enhanced monitoring and visualization.
+A distributed automated test system built with RabbitMQ, Celery, and Docker that demonstrates task routing, worker isolation, and concurrent execution.
+
+## 🎯 **Two Complete Implementations**
+
+This repository provides **two complete versions** of the distributed test system:
+
+### 📦 **[Minimal Version](./minimal_version/)** - Bare Essentials
+- ✅ **Core requirements only** - Just what's needed to pass the challenge
+- 📝 **~60 lines of code** across 5 files
+- 🚀 **Quick setup** - Get running in minutes
+- 🎓 **Perfect for learning** - Understand the fundamentals
+- 💡 **Simple output**: `Result from task_a: Hello from Task A`
+
+### 🚀 **[Extended Version](./extended_version/)** - Production Ready
+- ✅ **All core requirements** + advanced features
+- 📝 **1200+ lines of code** with comprehensive implementation
+- 🎨 **Rich visualization** - Colored output with real-time monitoring
+- 📊 **Performance metrics** - Detailed timing and statistics
+- 🔧 **Production features** - Logging, health checks, automation
+- 💼 **Enterprise ready** - Structured logging, error handling, retry logic
+
+---
+
+## 🚀 **Quick Start**
+
+### 🎯 **Minimal Version** (Learning & Prototyping)
+```bash
+cd minimal_version
+pip install -r requirements.txt
+docker-compose up -d
+python dispatch.py
+```
+
+### 🚀 **Extended Version** (Production Ready)
+```bash
+cd extended_version
+./setup.sh  # Automated setup
+# or manual: pip install -r requirements.txt && docker-compose up -d && python dispatch.py
+```
+
+---
 
 ## 🏗️ Architecture
 
@@ -323,17 +363,28 @@ EOF
 python load_test.py
 ```
 
-## 📁 File Structure
+## 📁 Repository Structure
 
 ```
-distributed_test_system/
-├── celery_app.py          # Celery configuration and tasks
-├── dispatch.py            # Enhanced dispatcher with visualization
-├── Dockerfile             # Container definition
-├── docker-compose.yml     # Orchestration configuration
-├── requirements.txt       # Python dependencies
-├── README.md              # This file
-└── dispatch_results_*.json # Generated result files
+distributed-test-system/
+├── 📁 minimal_version/              # Bare essentials implementation
+│   ├── celery_app.py               # Basic Celery config (20 lines)
+│   ├── dispatch.py                 # Simple dispatcher (15 lines)
+│   ├── Dockerfile                  # Basic container (8 lines)
+│   ├── docker-compose.yml          # Simple orchestration (10 lines)
+│   ├── requirements.txt            # Just celery (1 line)
+│   └── README.md                   # Minimal setup guide
+├── 📁 extended_version/             # Production-ready implementation
+│   ├── celery_app.py               # Advanced config + logging (165 lines)
+│   ├── dispatch.py                 # Rich visualization (250 lines)
+│   ├── Dockerfile                  # Hardened container (30 lines)
+│   ├── docker-compose.yml          # Full orchestration (49 lines)
+│   ├── requirements.txt            # Multiple dependencies (4 lines)
+│   ├── setup.sh                    # Automated setup (224 lines)
+│   ├── test-config.yml             # Configuration options (72 lines)
+│   └── README.md                   # Comprehensive guide
+├── COMPARISON.md                    # Detailed comparison of both versions
+└── README.md                       # This file - overview of both versions
 ```
 
 ## 🎯 Key Implementation Details
