@@ -28,12 +28,35 @@ This is the **production-ready, feature-rich version** of the distributed test s
 
 ## 🛠️ Quick Setup
 
-### Automated Setup (Recommended)
+### 🎯 Super Quick Start with Makefile
+```bash
+make setup    # Complete automated setup
+# or
+make test     # Full test sequence
+```
+
+### 📋 Makefile Commands
+```bash
+make setup      # Run setup script
+make install    # Install dependencies
+make build      # Build containers
+make up         # Start containers
+make down       # Stop containers
+make run        # Run dispatcher
+make test       # Full test sequence
+make logs       # Show logs
+make ps         # Container status
+make health     # Check system health
+make load-test  # Run load test
+make clean      # Clean up
+```
+
+### 🔧 Automated Setup (Traditional)
 ```bash
 ./setup.sh
 ```
 
-### Manual Setup
+### 🛠️ Manual Setup
 ```bash
 # 1. Start RabbitMQ
 brew services start rabbitmq  # macOS
@@ -125,14 +148,27 @@ Slowest Task: 0.702s
 
 ## 🔧 Advanced Usage
 
-### Monitor with Setup Script
+### 🎯 Makefile Features
+```bash
+# Health check
+make health
+# Checking system health...
+# RabbitMQ: OK
+# NAME                    COMMAND                  SERVICE    STATUS
+
+# Load testing
+make load-test
+# Completed 10 tasks in 1.23s
+```
+
+### 🔧 Traditional Setup Script Usage
 ```bash
 ./setup.sh logs     # View container logs
 ./setup.sh restart  # Restart containers
 ./setup.sh clean    # Clean up everything
 ```
 
-### Manual Container Management
+### 🛠️ Manual Container Management
 ```bash
 # View logs
 docker-compose logs -f

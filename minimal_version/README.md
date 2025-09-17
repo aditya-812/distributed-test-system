@@ -8,7 +8,22 @@ A bare minimum implementation of the distributed test system challenge.
 - Docker and Docker Compose
 - Python 3.11+
 
-## Setup
+## Quick Start with Makefile
+
+The easiest way to run the system:
+
+```bash
+make test    # Complete automated test
+```
+
+Or step by step:
+```bash
+make up      # Start containers
+make run     # Run dispatcher
+make down    # Stop containers
+```
+
+## Manual Setup
 
 1. **Start RabbitMQ**:
    ```bash
@@ -31,6 +46,21 @@ A bare minimum implementation of the distributed test system challenge.
    ```bash
    python dispatch.py
    ```
+
+## Makefile Commands
+
+```bash
+make help       # Show usage
+make install    # Install dependencies
+make build      # Build containers
+make up         # Start containers
+make down       # Stop containers
+make run        # Run dispatcher
+make test       # Full test sequence
+make logs       # Show logs
+make ps         # Container status
+make clean      # Clean up
+```
 
 ## Expected Output
 
