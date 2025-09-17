@@ -280,6 +280,36 @@ docker-compose ps  # Should show both workers running
 sudo rabbitmqctl list_queues
 ```
 
+## ⚙️ Configuration
+
+The system uses environment variables for configuration:
+
+- **`BROKER_URL`**: RabbitMQ connection string (default: `pyamqp://guest@localhost//`)
+- **`WORKER_ID`**: Unique identifier for each worker (set automatically in docker-compose)
+
+## 🧪 Testing
+
+### Quick Test
+```bash
+# Test both versions work
+cd minimal_version && python dispatch.py
+cd ../extended_version && python dispatch.py
+```
+
+### Load Testing (Extended Version)
+```bash
+cd extended_version
+python -c "
+from celery_app import task_a, task_b
+import time
+
+start = time.time()
+results = [task_a.delay() for _ in range(5)] + [task_b.delay() for _ in range(5)]
+for r in results: print(r.get())
+print(f'Total time: {time.time() - start:.2f}s')
+"
+```
+
 ## 🔧 Need More Help?
 
 - **Detailed Setup Instructions**: See version-specific README files
