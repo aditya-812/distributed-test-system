@@ -235,21 +235,6 @@ Slowest Task: 0.695s
 🎉 Dispatch completed successfully!
 ```
 
-## 🔧 Configuration
-
-### Environment Variables
-
-The system supports the following environment variables:
-
-- `BROKER_URL`: RabbitMQ connection string (default: `pyamqp://guest@localhost//`)
-- `WORKER_ID`: Unique identifier for each worker (set automatically in docker-compose)
-
-### Docker Compose Configuration
-
-The `docker-compose.yml` file configures:
-- **worker-a**: Processes only `task_a` from `queue_a`
-- **worker-b**: Processes only `task_b` from `queue_b`
-- **Networking**: Connects to host RabbitMQ via `host.docker.internal`
 
 ## 🐛 Troubleshooting
 
@@ -260,9 +245,9 @@ The `docker-compose.yml` file configures:
 # Check if RabbitMQ is running
 sudo rabbitmqctl status
 
-# Restart RabbitMQ if needed
-brew services restart rabbitmq  # macOS
-sudo systemctl restart rabbitmq-server  # Linux
+# Start RabbitMQ if needed
+brew services start rabbitmq  # macOS
+sudo systemctl start rabbitmq-server  # Linux
 ```
 
 #### 2. Docker containers not starting
@@ -271,99 +256,35 @@ sudo systemctl restart rabbitmq-server  # Linux
 docker-compose logs worker-a
 docker-compose logs worker-b
 
-# Rebuild containers
+# Rebuild containers if needed
 docker-compose down
 docker-compose build --no-cache
 docker-compose up -d
 ```
 
-#### 3. Tasks not being processed
-```bash
-# Verify worker queues
-docker exec celery-worker-a celery -A celery_app inspect active_queues
-
-# Check if workers are consuming
-docker exec celery-worker-a celery -A celery_app inspect stats
-```
-
-#### 4. Import errors when running dispatch.py
+#### 3. Import errors when running dispatch.py
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Ensure celery_app.py is in the current directory
-ls -la celery_app.py
+# Ensure you're in the correct directory
+ls -la celery_app.py  # Should exist
 ```
 
-### Debugging Commands
-
+#### 4. Tasks not being processed
 ```bash
-# View real-time logs from all containers
-docker-compose logs -f
-
-# Execute commands inside containers
-docker exec -it celery-worker-a bash
-docker exec -it celery-worker-b bash
-
-# Check Celery worker status
-docker exec celery-worker-a celery -A celery_app inspect stats
-docker exec celery-worker-b celery -A celery_app inspect stats
+# Check if workers are consuming from correct queues
+docker-compose ps  # Should show both workers running
 
 # Monitor RabbitMQ queues
 sudo rabbitmqctl list_queues
 ```
 
-## 🧪 Testing
+## 🔧 Need More Help?
 
-### Manual Testing
+- **Detailed Setup Instructions**: See version-specific README files
+- **Feature Comparison**: Review [COMPARISON.md](./COMPARISON.md) for detailed analysis
 
-1. **Test individual workers**:
-   ```bash
-   # Start only worker-a
-   docker-compose up worker-a
-   
-   # In another terminal, send only task_a
-   python -c "from celery_app import task_a; print(task_a.delay().get())"
-   ```
-
-2. **Test task isolation**:
-   ```bash
-   # Start only worker-a and try to send task_b
-   # It should timeout since worker-a only processes task_a
-   ```
-
-3. **Test failure scenarios**:
-   ```bash
-   # Stop RabbitMQ and run dispatcher
-   brew services stop rabbitmq
-   python dispatch.py  # Should show connection error
-   ```
-
-### Load Testing
-
-```bash
-# Create a simple load test script
-cat > load_test.py << EOF
-from celery_app import task_a, task_b
-import time
-
-start = time.time()
-results = []
-
-# Send 10 tasks of each type
-for i in range(10):
-    results.append(task_a.delay())
-    results.append(task_b.delay())
-
-# Wait for all results
-for r in results:
-    print(r.get())
-
-print(f"Total time: {time.time() - start:.2f}s")
-EOF
-
-python load_test.py
-```
 
 ## 📁 Repository Structure
 
@@ -389,39 +310,6 @@ distributed-test-system/
 └── README.md                       # This file - overview of both versions
 ```
 
-## 🎯 Key Implementation Details
-
-### Task Routing
-- **Queue Isolation**: Each task type routes to a specific queue
-- **Worker Specialization**: Workers only consume from designated queues
-- **Route Configuration**: Defined in `celery_app.py` using `task_routes`
-
-### Structured Logging
-- **JSON Format**: All logs use structured JSON with metadata
-- **Task Tracking**: Each task includes ID, timing, and worker information
-- **Performance Monitoring**: Execution times and retry counts tracked
-
-### Retry Mechanism
-- **Automatic Retries**: Tasks retry up to 3 times on failure
-- **Exponential Backoff**: 60-second delays between retries
-- **Error Handling**: Graceful degradation with detailed error reporting
-
-### Visualization Features
-- **Real-time Status**: Live updates during task execution
-- **Colored Output**: Status-based color coding for better readability
-- **Performance Metrics**: Detailed timing and success rate statistics
-- **Result Persistence**: JSON output for further analysis
-
-## 🚀 Stretch Goals Implemented
-
-1. **Enhanced Visualization**: Rich colored output with real-time status updates
-2. **Structured Logging**: JSON-formatted logs with comprehensive metadata
-3. **Performance Monitoring**: Detailed metrics and timing information
-4. **Result Persistence**: JSON output files for analysis
-5. **Health Checking**: Broker and worker connectivity validation
-6. **Docker Orchestration**: Complete containerized deployment with docker-compose
-7. **Retry Logic**: Robust error handling with exponential backoff
-8. **Concurrent Execution**: True parallel task processing with ThreadPoolExecutor
 
 ## 📝 License
 
