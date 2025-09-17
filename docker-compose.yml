@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  worker-a:
+    build: .
+    container_name: celery-worker-a
+    environment:
+      - BROKER_URL=pyamqp://guest@host.docker.internal//
+      - WORKER_ID=worker-a
+    command: celery -A celery_app worker --loglevel=info -Q queue_a --hostname=worker-a@%h
+    volumes:
+      - ./celery_app.py:/app/celery_app.py
+    restart: unless-stopped
+    depends_on:
+      - worker-b # Ensure both workers start together
+    networks:
+      - celery-network
+
+  worker-b:
+    build: .
+    container_name: celery-worker-b
+    environment:
+      - BROKER_URL=pyamqp://guest@host.docker.internal//
+      - WORKER_ID=worker-b
+    command: celery -A celery_app worker --loglevel=info -Q queue_b --hostname=worker-b@%h
+    volumes:
+      - ./celery_app.py:/app/celery_app.py
+    restart: unless-stopped
+    networks:
+      - celery-network
+
+networks:
+  celery-network:
+    driver: bridge
+  # Optional: Add a monitoring service
+  # flower:
+  #   build: .
+  #   container_name: celery-flower
+  #   command: celery -A celery_app flower --port=5555
+  #   ports:
+  #     - "5555:5555"
+  #   environment:
+  #     - BROKER_URL=pyamqp://guest@host.docker.internal//
+  #   depends_on:
+  #     - worker-a
+  #     - worker-b
+  #   networks:
+  #     - celery-network

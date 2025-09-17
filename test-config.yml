@@ -1,0 +1,71 @@
+# Optional test configuration for orchestration
+# This file can be used for additional configuration or testing scenarios
+
+version: '3.8'
+
+# Test configuration for different scenarios
+test_scenarios:
+  basic:
+    description: "Basic two-task execution"
+    tasks:
+      - task_a
+      - task_b
+    expected_workers: 2
+    timeout: 30
+
+  load_test:
+    description: "Load testing with multiple tasks"
+    tasks:
+      - task_a: 10
+      - task_b: 10
+    expected_workers: 2
+    timeout: 60
+
+  failure_test:
+    description: "Test failure scenarios"
+    scenarios:
+      - name: "no_broker"
+        description: "Test with broker down"
+      - name: "single_worker"
+        description: "Test with only one worker"
+
+# RabbitMQ configuration options
+rabbitmq:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
+  vhost: /
+  management_port: 15672
+
+# Celery configuration overrides
+celery:
+  broker_url: "pyamqp://guest@localhost//"
+  result_backend: "rpc://"
+  task_serializer: json
+  accept_content: ["json"]
+  result_serializer: json
+  timezone: UTC
+  enable_utc: true
+
+# Docker configuration
+docker:
+  network_mode: bridge
+  restart_policy: unless-stopped
+  log_driver: json-file
+  log_options:
+    max-size: "10m"
+    max-file: "3"
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  flower:
+    enabled: false  # Set to true to enable Flower monitoring
+    port: 5555
+  
+  health_checks:
+    enabled: true
+    interval: 30
+    timeout: 10
+    retries: 3
