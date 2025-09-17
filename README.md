@@ -21,6 +21,8 @@ This repository provides **two complete versions** of the distributed test syste
 - 🔧 **Production features** - Logging, health checks, automation
 - 💼 **Enterprise ready** - Structured logging, error handling, retry logic
 
+📊 **[View Detailed Comparison](./COMPARISON.md)** - Side-by-side feature analysis of both versions
+
 ---
 
 ## 🚀 **Quick Start**
