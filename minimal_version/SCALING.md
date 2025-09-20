@@ -68,32 +68,36 @@ make load-test TASKS=50
 
 **Setup:**
 ```bash
-make up                    # Start with 1 worker-a, 1 worker-b
-make load-test TASKS=10    # Send 10 tasks of each type
+make scale-all COUNT=1     # Start with 1 worker-a, 1 worker-b
+make load-test TASKS=20    # Send 20 tasks of each type
 ```
 
 **Results:**
 ```
-Starting load test with 10 tasks of each type...
+Starting load test with 20 tasks of each type...
 Expected workers: 2
 --------------------------------------------------
-Sending 10 Task A tasks...
-Sending 10 Task B tasks...
+Sending 20 Task A tasks...
+Sending 20 Task B tasks...
 Waiting for Task A results...
+  Completed 10/20 Task A tasks
+  Completed 20/20 Task A tasks
 Waiting for Task B results...
+  Completed 10/20 Task B tasks
+  Completed 20/20 Task B tasks
 --------------------------------------------------
 Load Test Summary:
-  Total tasks sent: 20
-  Total time: 3.581s
-  Overall throughput: 2.79 tasks/sec
-  Task A average execution: 0.103s
-  Task B average execution: 0.261s
+  Total tasks sent: 40
+  Total time: 40.005s
+  Overall throughput: 1.00 tasks/sec
+  Task A average execution: 0.102s
+  Task B average execution: 0.201s
 ```
 
 **Analysis:**
-- **Throughput**: 2.79 tasks/sec
-- **Task A**: 0.103s average execution time
-- **Task B**: 0.261s average execution time (slower due to longer sleep)
+- **Throughput**: 1.00 tasks/sec
+- **Task A**: 0.102s average execution time
+- **Task B**: 0.201s average execution time (slower due to longer sleep)
 - **Bottleneck**: Single worker per queue
 
 ### Test 2: Scaled Performance (3 workers each)
@@ -101,71 +105,43 @@ Load Test Summary:
 **Setup:**
 ```bash
 make scale-all COUNT=3     # Scale to 3 workers each
-make load-test TASKS=10    # Same test load
+make load-test TASKS=20    # Same test load
 ```
 
 **Results:**
 ```
-Starting load test with 10 tasks of each type...
+Starting load test with 20 tasks of each type...
 Expected workers: 2
 --------------------------------------------------
-Sending 10 Task A tasks...
-Sending 10 Task B tasks...
+Sending 20 Task A tasks...
+Sending 20 Task B tasks...
 Waiting for Task A results...
+  Completed 10/20 Task A tasks
+  Completed 20/20 Task A tasks
 Waiting for Task B results...
+  Completed 10/20 Task B tasks
+  Completed 20/20 Task B tasks
 --------------------------------------------------
 Load Test Summary:
-  Total tasks sent: 20
-  Total time: 2.211s
-  Overall throughput: 4.52 tasks/sec
+  Total tasks sent: 40
+  Total time: 37.542s
+  Overall throughput: 1.07 tasks/sec
   Task A average execution: 0.103s
-  Task B average execution: 0.204s
-```
-
-**Analysis:**
-- **Throughput**: 4.52 tasks/sec (**62% improvement!**)
-- **Task A**: Same execution time (0.103s)
-- **Task B**: Slightly faster (0.204s vs 0.261s)
-- **Total time**: Reduced from 3.581s to 2.211s
-
-### Test 3: Asymmetric Scaling (3 worker-a, 1 worker-b)
-
-**Setup:**
-```bash
-make scale QUEUE=worker-a COUNT=3
-make scale QUEUE=worker-b COUNT=1
-make load-test TASKS=15
-```
-
-**Results:**
-```
-Starting load test with 15 tasks of each type...
-Expected workers: 2
---------------------------------------------------
-Sending 15 Task A tasks...
-Sending 15 Task B tasks...
-Waiting for Task A results...
-Waiting for Task B results...
---------------------------------------------------
-Load Test Summary:
-  Total tasks sent: 30
-  Total time: 4.892s
-  Overall throughput: 6.13 tasks/sec
-  Task A average execution: 0.102s
   Task B average execution: 0.203s
 ```
 
 **Analysis:**
-- **Throughput**: 6.13 tasks/sec
-- **Task A**: Processed faster due to 3 workers
-- **Task B**: Processed slower due to 1 worker
-- **Demonstrates**: Queue-specific scaling benefits
+- **Throughput**: 1.07 tasks/sec (**7% improvement**)
+- **Task A**: Same execution time (0.103s)
+- **Task B**: Same execution time (0.203s)
+- **Total time**: Reduced from 40.005s to 37.542s
+- **Note**: Small improvement due to low task load
 
-### Test 4: High Load Test (50 tasks each)
+### Test 3: High Load Test (50 tasks each)
 
 **Setup:**
 ```bash
-make scale-all COUNT=2     # 2 workers each
+make scale-all COUNT=1     # 1 worker each
 make load-test TASKS=50    # High load
 ```
 
@@ -177,51 +153,113 @@ Expected workers: 2
 Sending 50 Task A tasks...
 Sending 50 Task B tasks...
 Waiting for Task A results...
+  Completed 10/50 Task A tasks
+  Completed 20/50 Task A tasks
+  Completed 30/50 Task A tasks
+  Completed 40/50 Task A tasks
+  Completed 50/50 Task A tasks
 Waiting for Task B results...
+  Completed 10/50 Task B tasks
+  Completed 20/50 Task B tasks
+  Completed 30/50 Task B tasks
+  Completed 40/50 Task B tasks
+  Completed 50/50 Task B tasks
 --------------------------------------------------
 Load Test Summary:
   Total tasks sent: 100
-  Total time: 12.456s
-  Overall throughput: 8.03 tasks/sec
-  Task A average execution: 0.104s
-  Task B average execution: 0.205s
+  Total time: 99.571s
+  Overall throughput: 1.00 tasks/sec
+  Task A average execution: 0.102s
+  Task B average execution: 0.203s
 ```
 
 **Analysis:**
-- **Throughput**: 8.03 tasks/sec
+- **Throughput**: 1.00 tasks/sec
 - **Total tasks**: 100 (50 of each type)
-- **Scaling benefit**: Maintains performance under high load
+- **Baseline**: Single worker performance under high load
+
+### Test 4: Scaled High Load Test (3 workers each)
+
+**Setup:**
+```bash
+make scale-all COUNT=3     # 3 workers each
+make load-test TASKS=50    # Same high load
+```
+
+**Results:**
+```
+Starting load test with 50 tasks of each type...
+Expected workers: 2
+--------------------------------------------------
+Sending 50 Task A tasks...
+Sending 50 Task B tasks...
+Waiting for Task A results...
+  Completed 10/50 Task A tasks
+  Completed 20/50 Task A tasks
+  Completed 30/50 Task A tasks
+  Completed 40/50 Task A tasks
+  Completed 50/50 Task A tasks
+Waiting for Task B results...
+  Completed 10/50 Task B tasks
+  Completed 20/50 Task B tasks
+  Completed 30/50 Task B tasks
+  Completed 40/50 Task B tasks
+  Completed 50/50 Task B tasks
+--------------------------------------------------
+Load Test Summary:
+  Total tasks sent: 100
+  Total time: 77.909s
+  Overall throughput: 1.28 tasks/sec
+  Task A average execution: 0.101s
+  Task B average execution: 0.202s
+```
+
+**Analysis:**
+- **Throughput**: 1.28 tasks/sec (**28% improvement!**)
+- **Total time**: Reduced from 99.571s to 77.909s
+- **Time saved**: 21.662s (22% faster)
+- **Scaling benefit**: Clear improvement under high load
 
 ## Performance Comparison
 
-| Configuration | Workers | Throughput | Improvement | Notes |
-|---------------|---------|------------|-------------|-------|
-| Baseline | 1+1 | 2.79 tasks/sec | - | Single worker per queue |
-| Scaled | 3+3 | 4.52 tasks/sec | +62% | 3x workers per queue |
-| Asymmetric | 3+1 | 6.13 tasks/sec | +120% | Optimized for Task A load |
-| High Load | 2+2 | 8.03 tasks/sec | +188% | Sustained under load |
+| Configuration | Workers | Load | Throughput | Improvement | Notes |
+|---------------|---------|------|------------|-------------|-------|
+| Baseline (20 tasks) | 1+1 | 40 tasks | 1.00 tasks/sec | - | Single worker per queue |
+| Scaled (20 tasks) | 3+3 | 40 tasks | 1.07 tasks/sec | +7% | Small improvement with light load |
+| Baseline (50 tasks) | 1+1 | 100 tasks | 1.00 tasks/sec | - | Single worker under high load |
+| Scaled (50 tasks) | 3+3 | 100 tasks | 1.28 tasks/sec | +28% | Clear improvement under high load |
 
 ## Scaling Benefits Demonstrated
 
-### 1. **Linear Throughput Improvement**
-- More workers = higher throughput
-- Near-linear scaling up to system limits
-- RabbitMQ handles load balancing automatically
+### 1. **Load-Dependent Improvement**
+- **Light load (20 tasks)**: 7% improvement (1.00 → 1.07 tasks/sec)
+- **Heavy load (50 tasks)**: 28% improvement (1.00 → 1.28 tasks/sec)
+- **Key insight**: Scaling benefits are more pronounced under higher load
+- **RabbitMQ**: Handles load balancing automatically
 
-### 2. **Queue-Specific Optimization**
+### 2. **Time Savings Under Load**
+- **50 tasks baseline**: 99.571s with 1 worker each
+- **50 tasks scaled**: 77.909s with 3 workers each
+- **Time saved**: 21.662s (22% faster)
+- **Real benefit**: Significant time reduction for high-volume processing
+
+### 3. **Queue-Specific Optimization**
 - Scale based on actual queue load
 - Task A heavy? Scale worker-a
 - Task B heavy? Scale worker-b
+- **Demonstrated**: Both queues benefit from scaling
 
-### 3. **Resource Efficiency**
+### 4. **Resource Efficiency**
 - Scale down during low usage
 - Scale up during peak load
-- Dynamic resource allocation
+- **Real data**: 3x workers provide 28% throughput improvement
+- Dynamic resource allocation based on demand
 
-### 4. **Fault Tolerance**
+### 5. **Fault Tolerance**
 - Multiple workers per queue
 - If one worker fails, others continue
 - No single point of failure
+- **Production benefit**: System resilience
 
 ## How Scaling Works
 
