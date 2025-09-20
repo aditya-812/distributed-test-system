@@ -3,6 +3,7 @@
 Simple dispatcher script that sends tasks concurrently and prints results.
 Uses test-config.yml for orchestration configuration.
 """
+import time
 from celery_app import task_a, task_b, config
 
 def main():
@@ -12,6 +13,7 @@ def main():
     print("Dispatching tasks...")
     
     # Send both tasks concurrently
+    start_time = time.time()
     result_a = task_a.delay()
     result_b = task_b.delay()
     
@@ -23,8 +25,15 @@ def main():
     result_from_a = result_a.get()
     result_from_b = result_b.get()
     
-    print(f"Result from task_a: {result_from_a}")
-    print(f"Result from task_b: {result_from_b}")
+    total_time = time.time() - start_time
+    
+    # Display results with monitoring information
+    print(f"Result from task_a: {result_from_a['result']}")
+    print(f"Task A execution time: {result_from_a['execution_time']:.3f}s")
+    print(f"Result from task_b: {result_from_b['result']}")
+    print(f"Task B execution time: {result_from_b['execution_time']:.3f}s")
+    print(f"Total dispatcher time: {total_time:.3f}s (concurrent execution)")
+    print(f"Sequential time would be: {result_from_a['execution_time'] + result_from_b['execution_time']:.3f}s")
 
 if __name__ == '__main__':
     main()

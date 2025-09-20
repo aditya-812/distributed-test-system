@@ -7,6 +7,10 @@ system:
   version: "1.0"
   workers: 2
   queues: 2
+  scaling:
+    enabled: true
+    max_workers_per_queue: 5
+    auto_scale: false
 
 # Test scenario
 test_scenario:

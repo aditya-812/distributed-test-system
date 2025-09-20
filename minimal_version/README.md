@@ -72,9 +72,44 @@ The system uses `test-config.yml` for orchestration configuration. The dispatche
 Loaded config: Basic two-task execution test
 Expected workers: 2
 Dispatching tasks...
+Task A sent with ID: ce70d64d-fb74-4721-be58-0343624e1f15
+Task B sent with ID: 2d726401-9c21-4a2a-8838-d86993c974e9
+Waiting for results...
 Result from task_a: Hello from Task A
+Task A execution time: 0.105s
 Result from task_b: Hello from Task B
+Task B execution time: 0.205s
+Total dispatcher time: 0.292s
 ```
+
+## Monitoring
+
+The system includes basic monitoring features:
+- **Task execution timing** - Shows how long each task takes to execute
+- **Total dispatcher time** - Overall time from dispatch to completion
+- **Task IDs** - Unique identifiers for tracking tasks
+- **Real-time logs** - Use `make monitor` to watch worker logs
+
+## Horizontal Scaling
+
+The system supports dynamic horizontal scaling:
+
+```bash
+# Scale individual worker types
+make scale QUEUE=worker-a COUNT=3
+make scale QUEUE=worker-b COUNT=2
+
+# Scale all workers equally
+make scale-all COUNT=4
+
+# Check scaling status
+make status
+
+# Run load tests
+make load-test TASKS=20
+```
+
+See [SCALING.md](SCALING.md) for detailed scaling documentation.
 
 ## Architecture
 

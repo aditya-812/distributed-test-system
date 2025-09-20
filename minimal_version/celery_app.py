@@ -1,9 +1,11 @@
 """
 Minimal Celery application with two tasks and routing.
 Uses test-config.yml for configuration.
+Includes basic monitoring.
 """
 import os
 import yaml
+import time
 from celery import Celery
 
 def load_config():
@@ -20,6 +22,8 @@ def load_config():
 
 # Load configuration (required)
 config = load_config()
+
+# Monitoring is now handled by returning execution time in task results
 
 # Build broker URL from config
 rabbitmq_config = config['rabbitmq']
@@ -48,11 +52,29 @@ app.conf.update(
 
 @app.task
 def task_a():
-    """Task A: Returns greeting message."""
-    return "Hello from Task A"
+    """Task A: Returns greeting message with basic monitoring."""
+    start_time = time.time()
+    
+    # Simulate some work
+    time.sleep(0.1)
+    
+    result = "Hello from Task A"
+    execution_time = time.time() - start_time
+    
+    # Return result with execution time for monitoring
+    return {"result": result, "execution_time": execution_time, "task": "A"}
 
 @app.task
 def task_b():
-    """Task B: Returns greeting message."""
-    return "Hello from Task B"
+    """Task B: Returns greeting message with basic monitoring."""
+    start_time = time.time()
+    
+    # Simulate some work
+    time.sleep(0.2)
+    
+    result = "Hello from Task B"
+    execution_time = time.time() - start_time
+    
+    # Return result with execution time for monitoring
+    return {"result": result, "execution_time": execution_time, "task": "B"}
 
