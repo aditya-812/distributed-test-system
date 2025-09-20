@@ -1,0 +1,33 @@
+# Test configuration for orchestration
+# This file is used by dispatch.py for basic configuration
+
+# System overview
+system:
+  description: "Minimal distributed test system"
+  version: "1.0"
+  workers: 2
+  queues: 2
+
+# Test scenario
+test_scenario:
+  description: "Basic two-task execution test"
+  tasks: ["task_a", "task_b"]
+  concurrent: true
+
+# RabbitMQ configuration (manual setup required)
+rabbitmq:
+  host: localhost
+  port: 5672
+  username: guest
+  password: guest
+  management_port: 15672
+
+# Celery configuration
+celery:
+  broker_url: "pyamqp://guest@localhost//"
+  result_backend: "rpc://"
+  
+# Task routing configuration
+task_routing:
+  task_a: queue_a  # Processed by worker-a
+  task_b: queue_b  # Processed by worker-b

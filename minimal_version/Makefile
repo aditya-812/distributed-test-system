@@ -1,10 +1,10 @@
-.PHONY: help install build up down run test logs ps clean
+.PHONY: help install build up down run test logs ps clean venv
 
 help:
 	@echo "Usage:"
-	@echo "  make install    Install dependencies"
+	@echo "  make install    Install dependencies in virtual environment"
 	@echo "  make build      Build containers"
-	@echo "  make up         Start containers"
+	@echo "  make up         Start containers (includes RabbitMQ)"
 	@echo "  make down       Stop containers"
 	@echo "  make run        Run dispatcher"
 	@echo "  make test       Run full test"
@@ -12,8 +12,12 @@ help:
 	@echo "  make ps         Show container status"
 	@echo "  make clean      Clean up"
 
-install:
-	pip install -r requirements.txt
+venv:
+	python3 -m venv venv
+	./venv/bin/pip install --upgrade pip
+
+install: venv
+	./venv/bin/pip install -r requirements.txt
 
 build:
 	docker-compose build
@@ -25,11 +29,11 @@ down:
 	docker-compose down
 
 run:
-	python dispatch.py
+	source venv/bin/activate && python dispatch.py
 
 test: install build up
 	@sleep 2
-	python dispatch.py
+	source venv/bin/activate && python dispatch.py
 	$(MAKE) down
 
 logs:
@@ -41,3 +45,4 @@ ps:
 clean:
 	docker-compose down -v
 	docker system prune -f
+	rm -rf venv

@@ -2,11 +2,11 @@ services:
   worker-a:
     build: .
     environment:
-      - BROKER_URL=pyamqp://guest@host.docker.internal//
+      - BROKER_URL=pyamqp://guest@host.docker.internal:5672//
     command: celery -A celery_app worker --loglevel=info -Q queue_a
 
   worker-b:
     build: .
     environment:
-      - BROKER_URL=pyamqp://guest@host.docker.internal//
+      - BROKER_URL=pyamqp://guest@host.docker.internal:5672//
     command: celery -A celery_app worker --loglevel=info -Q queue_b
