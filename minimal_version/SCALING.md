@@ -72,32 +72,32 @@ make scale-all COUNT=1     # Start with 1 worker-a, 1 worker-b
 make load-test TASKS=20    # Send 20 tasks of each type
 ```
 
-**Results:**
-```
-Starting load test with 20 tasks of each type...
-Expected workers: 2
---------------------------------------------------
-Sending 20 Task A tasks...
-Sending 20 Task B tasks...
-Waiting for Task A results...
-  Completed 10/20 Task A tasks
-  Completed 20/20 Task A tasks
-Waiting for Task B results...
-  Completed 10/20 Task B tasks
-  Completed 20/20 Task B tasks
---------------------------------------------------
-Load Test Summary:
-  Total tasks sent: 40
-  Total time: 40.005s
-  Overall throughput: 1.00 tasks/sec
-  Task A average execution: 0.102s
-  Task B average execution: 0.201s
-```
+    **Results:**
+    ```
+    Starting load test with 20 tasks of each type...
+    Running workers: 2
+    --------------------------------------------------
+    Sending 20 Task A tasks...
+    Sending 20 Task B tasks...
+    Waiting for Task A results...
+      Completed 10/20 Task A tasks
+      Completed 20/20 Task A tasks
+    Waiting for Task B results...
+      Completed 10/20 Task B tasks
+      Completed 20/20 Task B tasks
+    --------------------------------------------------
+    Load Test Summary:
+      Total tasks sent: 40
+      Total time: 15.031s
+      Overall throughput: 2.66 tasks/sec
+      Task A average execution: 0.103s
+      Task B average execution: 0.203s
+    ```
 
 **Analysis:**
-- **Throughput**: 1.00 tasks/sec
-- **Task A**: 0.102s average execution time
-- **Task B**: 0.201s average execution time (slower due to longer sleep)
+- **Throughput**: 2.66 tasks/sec
+- **Task A**: 0.103s average execution time
+- **Task B**: 0.203s average execution time (slower due to longer sleep)
 - **Bottleneck**: Single worker per queue
 
 ### Test 2: Scaled Performance (3 workers each)
@@ -108,34 +108,35 @@ make scale-all COUNT=3     # Scale to 3 workers each
 make load-test TASKS=20    # Same test load
 ```
 
-**Results:**
-```
-Starting load test with 20 tasks of each type...
-Expected workers: 2
---------------------------------------------------
-Sending 20 Task A tasks...
-Sending 20 Task B tasks...
-Waiting for Task A results...
-  Completed 10/20 Task A tasks
-  Completed 20/20 Task A tasks
-Waiting for Task B results...
-  Completed 10/20 Task B tasks
-  Completed 20/20 Task B tasks
---------------------------------------------------
-Load Test Summary:
-  Total tasks sent: 40
-  Total time: 37.542s
-  Overall throughput: 1.07 tasks/sec
-  Task A average execution: 0.103s
-  Task B average execution: 0.203s
-```
+    **Results:**
+    ```
+    Starting load test with 20 tasks of each type...
+    Running workers: 6
+    --------------------------------------------------
+    Sending 20 Task A tasks...
+    Sending 20 Task B tasks...
+    Waiting for Task A results...
+      Completed 10/20 Task A tasks
+      Completed 20/20 Task A tasks
+    Waiting for Task B results...
+      Completed 10/20 Task B tasks
+      Completed 20/20 Task B tasks
+    --------------------------------------------------
+    Load Test Summary:
+      Total tasks sent: 40
+      Total time: 8.943s
+      Overall throughput: 4.47 tasks/sec
+      Task A average execution: 0.101s
+      Task B average execution: 0.202s
+    ```
 
 **Analysis:**
-- **Throughput**: 1.07 tasks/sec (**7% improvement**)
-- **Task A**: Same execution time (0.103s)
-- **Task B**: Same execution time (0.203s)
-- **Total time**: Reduced from 40.005s to 37.542s
-- **Note**: Small improvement due to low task load
+- **Throughput**: 4.47 tasks/sec (**68% improvement!**)
+- **Task A**: Same execution time (0.101s)
+- **Task B**: Same execution time (0.202s)
+- **Total time**: Reduced from 15.031s to 8.943s
+- **Time saved**: 6.088s (40% faster)
+- **Scaling benefit**: Significant improvement in throughput and total processing time, demonstrating the effectiveness of horizontal scaling.
 
 ### Test 3: High Load Test (50 tasks each)
 
@@ -145,36 +146,36 @@ make scale-all COUNT=1     # 1 worker each
 make load-test TASKS=50    # High load
 ```
 
-**Results:**
-```
-Starting load test with 50 tasks of each type...
-Expected workers: 2
---------------------------------------------------
-Sending 50 Task A tasks...
-Sending 50 Task B tasks...
-Waiting for Task A results...
-  Completed 10/50 Task A tasks
-  Completed 20/50 Task A tasks
-  Completed 30/50 Task A tasks
-  Completed 40/50 Task A tasks
-  Completed 50/50 Task A tasks
-Waiting for Task B results...
-  Completed 10/50 Task B tasks
-  Completed 20/50 Task B tasks
-  Completed 30/50 Task B tasks
-  Completed 40/50 Task B tasks
-  Completed 50/50 Task B tasks
---------------------------------------------------
-Load Test Summary:
-  Total tasks sent: 100
-  Total time: 99.571s
-  Overall throughput: 1.00 tasks/sec
-  Task A average execution: 0.102s
-  Task B average execution: 0.203s
-```
+    **Results:**
+    ```
+    Starting load test with 50 tasks of each type...
+    Running workers: 2
+    --------------------------------------------------
+    Sending 50 Task A tasks...
+    Sending 50 Task B tasks...
+    Waiting for Task A results...
+      Completed 10/50 Task A tasks
+      Completed 20/50 Task A tasks
+      Completed 30/50 Task A tasks
+      Completed 40/50 Task A tasks
+      Completed 50/50 Task A tasks
+    Waiting for Task B results...
+      Completed 10/50 Task B tasks
+      Completed 20/50 Task B tasks
+      Completed 30/50 Task B tasks
+      Completed 40/50 Task B tasks
+      Completed 50/50 Task B tasks
+    --------------------------------------------------
+    Load Test Summary:
+      Total tasks sent: 100
+      Total time: 91.330s
+      Overall throughput: 1.09 tasks/sec
+      Task A average execution: 0.102s
+      Task B average execution: 0.203s
+    ```
 
 **Analysis:**
-- **Throughput**: 1.00 tasks/sec
+- **Throughput**: 1.09 tasks/sec
 - **Total tasks**: 100 (50 of each type)
 - **Baseline**: Single worker performance under high load
 
@@ -186,61 +187,61 @@ make scale-all COUNT=3     # 3 workers each
 make load-test TASKS=50    # Same high load
 ```
 
-**Results:**
-```
-Starting load test with 50 tasks of each type...
-Expected workers: 2
---------------------------------------------------
-Sending 50 Task A tasks...
-Sending 50 Task B tasks...
-Waiting for Task A results...
-  Completed 10/50 Task A tasks
-  Completed 20/50 Task A tasks
-  Completed 30/50 Task A tasks
-  Completed 40/50 Task A tasks
-  Completed 50/50 Task A tasks
-Waiting for Task B results...
-  Completed 10/50 Task B tasks
-  Completed 20/50 Task B tasks
-  Completed 30/50 Task B tasks
-  Completed 40/50 Task B tasks
-  Completed 50/50 Task B tasks
---------------------------------------------------
-Load Test Summary:
-  Total tasks sent: 100
-  Total time: 77.909s
-  Overall throughput: 1.28 tasks/sec
-  Task A average execution: 0.101s
-  Task B average execution: 0.202s
-```
+    **Results:**
+    ```
+    Starting load test with 50 tasks of each type...
+    Running workers: 6
+    --------------------------------------------------
+    Sending 50 Task A tasks...
+    Sending 50 Task B tasks...
+    Waiting for Task A results...
+      Completed 10/50 Task A tasks
+      Completed 20/50 Task A tasks
+      Completed 30/50 Task A tasks
+      Completed 40/50 Task A tasks
+      Completed 50/50 Task A tasks
+    Waiting for Task B results...
+      Completed 10/50 Task B tasks
+      Completed 20/50 Task B tasks
+      Completed 30/50 Task B tasks
+      Completed 40/50 Task B tasks
+      Completed 50/50 Task B tasks
+    --------------------------------------------------
+    Load Test Summary:
+      Total tasks sent: 100
+      Total time: 62.636s
+      Overall throughput: 1.60 tasks/sec
+      Task A average execution: 0.102s
+      Task B average execution: 0.203s
+    ```
 
 **Analysis:**
-- **Throughput**: 1.28 tasks/sec (**28% improvement!**)
-- **Total time**: Reduced from 99.571s to 77.909s
-- **Time saved**: 21.662s (22% faster)
+- **Throughput**: 1.60 tasks/sec (**47% improvement!**)
+- **Total time**: Reduced from 91.330s to 62.636s
+- **Time saved**: 28.694s (31% faster)
 - **Scaling benefit**: Clear improvement under high load
 
 ## Performance Comparison
 
 | Configuration | Workers | Load | Throughput | Improvement | Notes |
 |---------------|---------|------|------------|-------------|-------|
-| Baseline (20 tasks) | 1+1 | 40 tasks | 1.00 tasks/sec | - | Single worker per queue |
-| Scaled (20 tasks) | 3+3 | 40 tasks | 1.07 tasks/sec | +7% | Small improvement with light load |
-| Baseline (50 tasks) | 1+1 | 100 tasks | 1.00 tasks/sec | - | Single worker under high load |
-| Scaled (50 tasks) | 3+3 | 100 tasks | 1.28 tasks/sec | +28% | Clear improvement under high load |
+| Baseline (20 tasks) | 1+1 | 40 tasks | 2.66 tasks/sec | - | Single worker per queue |
+| Scaled (20 tasks) | 3+3 | 40 tasks | 4.47 tasks/sec | +68% | Significant improvement with light load |
+| Baseline (50 tasks) | 1+1 | 100 tasks | 1.09 tasks/sec | - | Single worker under high load |
+| Scaled (50 tasks) | 3+3 | 100 tasks | 1.60 tasks/sec | +47% | Clear improvement under high load |
 
 ## Scaling Benefits Demonstrated
 
 ### 1. **Load-Dependent Improvement**
-- **Light load (20 tasks)**: 7% improvement (1.00 → 1.07 tasks/sec)
-- **Heavy load (50 tasks)**: 28% improvement (1.00 → 1.28 tasks/sec)
-- **Key insight**: Scaling benefits are more pronounced under higher load
+- **Light load (20 tasks)**: 68% improvement (2.66 → 4.47 tasks/sec)
+- **Heavy load (50 tasks)**: 47% improvement (1.09 → 1.60 tasks/sec)
+- **Key insight**: Scaling benefits are significant across all load levels, with particularly strong improvements under light load
 - **RabbitMQ**: Handles load balancing automatically
 
 ### 2. **Time Savings Under Load**
-- **50 tasks baseline**: 99.571s with 1 worker each
-- **50 tasks scaled**: 77.909s with 3 workers each
-- **Time saved**: 21.662s (22% faster)
+- **50 tasks baseline**: 91.330s with 1 worker each
+- **50 tasks scaled**: 62.636s with 3 workers each
+- **Time saved**: 28.694s (31% faster)
 - **Real benefit**: Significant time reduction for high-volume processing
 
 ### 3. **Queue-Specific Optimization**

@@ -24,7 +24,6 @@ def run_load_test(num_tasks: int = 20):
     actual_workers = get_actual_worker_count()
     print(f"Starting load test with {num_tasks} tasks of each type...")
     print(f"Running workers: {actual_workers}")
-    print(f"Config workers: {config['system']['workers']}")
     print("-" * 50)
     
     start_time = time.time()
