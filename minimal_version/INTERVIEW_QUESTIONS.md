@@ -77,7 +77,21 @@ This document contains potential interview questions based on the minimal versio
     - Show "Sequential time would be" calculation
     - Demonstrate that concurrent execution is faster
 
-12. **What happens if one task takes much longer than the other?**
+12. **Why do you use `time.sleep()` in your tasks?**
+    - **Simulate realistic work**: Real tasks don't complete instantly
+    - **Make timing measurable**: Without sleep, tasks complete in ~0.001s
+    - **Demonstrate concurrent benefits**: 0.1s + 0.2s = 0.3s sequential vs ~0.2s concurrent
+    - **Show scaling improvements**: Longer tasks make scaling benefits visible
+    - **Realistic performance metrics**: Execution time tracking becomes meaningful
+
+13. **What would real tasks do instead of `time.sleep()`?**
+    - **Database operations**: Query databases, process results
+    - **API calls**: External service requests, data processing
+    - **File processing**: Read/process large files, data transformation
+    - **CPU-intensive work**: Calculations, image processing, ML inference
+    - **I/O operations**: Network requests, disk reads/writes
+
+14. **What happens if one task takes much longer than the other?**
     - Dispatcher waits for both tasks to complete
     - Total time = max(task_a_time, task_b_time) + overhead
     - Still faster than sequential execution

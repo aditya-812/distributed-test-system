@@ -2,6 +2,8 @@
 
 A distributed automated test system built with RabbitMQ, Celery, and Docker that demonstrates task routing, worker isolation, and concurrent execution.
 
+> 📋 **Original Challenge Requirements**: See [CHALLENGE_REQUIREMENTS.md](./CHALLENGE_REQUIREMENTS.md) for the complete challenge specification.
+
 ## 🎯 **Two Complete Implementations**
 
 This repository provides **two complete versions** of the distributed test system:

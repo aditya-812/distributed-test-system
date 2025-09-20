@@ -66,6 +66,10 @@ def task_a(self):
     # Simulate some work
     time.sleep(0.1)
     
+    # DEMO RETRY: Uncomment the lines below to demonstrate retry mechanism
+    # if retry_count < 2:
+    #     raise Exception(f"Simulated failure on attempt {retry_count + 1}")
+    
     result = "Hello from Task A"
     execution_time = time.time() - start_time
     
