@@ -157,7 +157,6 @@ See [SCALING.md](SCALING.md) for detailed scaling documentation.
 - `docker-compose.yml`: Container orchestration
 - `requirements.txt`: Python dependencies (celery, pyyaml)
 - `test-config.yml`: Orchestration configuration with scaling settings
-- `scale.py`: Dynamic horizontal scaling script
 - `load_test.py`: Performance testing and load testing tools
 - `SCALING.md`: Comprehensive scaling documentation
 - `Makefile`: Build automation and scaling commands

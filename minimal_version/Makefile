@@ -1,4 +1,4 @@
-.PHONY: help install build up down run test logs ps clean venv monitor scale status
+.PHONY: help install build up down run test logs ps clean venv monitor scale scale-all status
 
 help:
 	@echo "Usage:"
@@ -55,17 +55,17 @@ scale:
 		echo "Usage: make scale QUEUE=worker-a COUNT=3"; \
 		exit 1; \
 	fi
-	source venv/bin/activate && python scale.py scale --queue $(QUEUE) --count $(COUNT)
+	docker-compose up -d --scale $(QUEUE)=$(COUNT)
 
 scale-all:
 	@if [ -z "$(COUNT)" ]; then \
 		echo "Usage: make scale-all COUNT=3"; \
 		exit 1; \
 	fi
-	source venv/bin/activate && python scale.py scale-all --all-count $(COUNT)
+	docker-compose up -d --scale worker-a=$(COUNT) --scale worker-b=$(COUNT)
 
 status:
-	source venv/bin/activate && python scale.py status
+	docker-compose ps
 
 load-test:
 	@TASKS=$${TASKS:-20}; \
