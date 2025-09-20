@@ -161,6 +161,7 @@ See [SCALING.md](SCALING.md) for detailed scaling documentation.
 - `load_test.py`: Performance testing and load testing tools
 - `SCALING.md`: Comprehensive scaling documentation
 - `Makefile`: Build automation and scaling commands
+- `INTERVIEW_QUESTIONS.md`: Potential interview questions and answers
 
 ## Cleanup
 
