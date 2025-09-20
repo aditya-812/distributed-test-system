@@ -49,15 +49,15 @@ app.conf.update(
     broker_url=broker_url,
     result_backend='rpc://',
     task_routes=task_routes,
-    # Retry configuration
-    task_default_retry_delay=60,  # 60 seconds
-    task_max_retries=3,
-    task_retry_jitter=True,
-    task_retry_backoff=True,
-    task_retry_backoff_max=600,  # 10 minutes max
+    # Retry configuration from test-config.yml
+    task_default_retry_delay=config['retry_config']['retry_delay'],
+    task_max_retries=config['retry_config']['max_retries'],
+    task_retry_jitter=config['retry_config']['retry_jitter'],
+    task_retry_backoff=config['retry_config']['retry_backoff'],
+    task_retry_backoff_max=config['retry_config']['retry_backoff_max'],
 )
 
-@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': config['retry_config']['max_retries'], 'countdown': 5})
 def task_a(self):
     """Task A: Returns greeting message with retry mechanism."""
     start_time = time.time()
@@ -76,7 +76,7 @@ def task_a(self):
         "retry_count": retry_count
     }
 
-@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': config['retry_config']['max_retries'], 'countdown': 5})
 def task_b(self):
     """Task B: Returns greeting message with retry mechanism."""
     start_time = time.time()

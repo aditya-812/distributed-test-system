@@ -1,43 +1,31 @@
 # Test configuration for orchestration
-# This file is used by dispatch.py for basic configuration
+# This file is used by celery_app.py and dispatch.py
 
-# System overview
+# System overview (used by dispatch.py for display)
 system:
   description: "Minimal distributed test system"
-  version: "1.0"
   workers: 2
-  queues: 2
-  scaling:
-    enabled: true
-    max_workers_per_queue: 5
-    auto_scale: false
 
-# Test scenario
+# Test scenario (used by dispatch.py for display)
 test_scenario:
   description: "Basic two-task execution test"
-  tasks: ["task_a", "task_b"]
-  concurrent: true
 
-# RabbitMQ configuration (manual setup required)
+# RabbitMQ configuration (used by celery_app.py for broker URL)
 rabbitmq:
   host: localhost
   port: 5672
   username: guest
   password: guest
-  management_port: 15672
 
-# Celery configuration
-celery:
-  broker_url: "pyamqp://guest@localhost//"
-  result_backend: "rpc://"
-  retry_config:
-    max_retries: 3
-    retry_delay: 60
-    retry_backoff: true
-    retry_backoff_max: 600
-    retry_jitter: true
-  
-# Task routing configuration
+# Task routing configuration (used by celery_app.py for queue routing)
 task_routing:
   task_a: queue_a  # Processed by worker-a
   task_b: queue_b  # Processed by worker-b
+
+# Celery retry configuration (used by celery_app.py for retry settings)
+retry_config:
+  max_retries: 3
+  retry_delay: 60
+  retry_backoff: true
+  retry_backoff_max: 600
+  retry_jitter: true

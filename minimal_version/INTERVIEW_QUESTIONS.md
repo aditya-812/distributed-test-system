@@ -261,6 +261,142 @@ This document contains potential interview questions based on the minimal versio
     - Monitoring resource usage
     - A/B testing different configurations
 
+## 🔄 **Task Distribution & Scaling Mechanics**
+
+### **Understanding How Distribution Works**
+39. **How are tasks distributed across multiple worker containers?**
+    - Tasks are routed to specific queues based on task routing configuration
+    - Multiple workers can consume from the same queue
+    - RabbitMQ uses round-robin distribution among available workers
+    - Each worker processes tasks independently and in parallel
+
+40. **What is the role of RabbitMQ in task distribution?**
+    - Acts as message broker for task distribution
+    - Manages queues and message routing
+    - Provides load balancing across workers
+    - Ensures message delivery and persistence
+
+41. **How does task routing ensure isolation between different task types?**
+    - `task_a` → `queue_a` → `worker-a` containers only
+    - `task_b` → `queue_b` → `worker-b` containers only
+    - No cross-contamination between task types
+    - Independent scaling of each task type
+
+42. **What happens when you scale from 1 worker to 3 workers for the same queue?**
+    - All 3 workers consume from the same queue
+    - RabbitMQ distributes messages using round-robin
+    - Tasks are processed in parallel across all workers
+    - Throughput increases proportionally (in theory)
+
+43. **How can you verify that tasks are actually being distributed across workers?**
+    - Check Docker container logs: `docker-compose logs worker-a`
+    - Monitor RabbitMQ management interface
+    - Use `docker-compose ps` to see running containers
+    - Look for different worker IDs processing different tasks
+
+### **Scaling Architecture Deep Dive**
+44. **Explain the complete flow from task dispatch to result collection.**
+    1. `dispatch.py` calls `task_a.delay()` or `task_b.delay()`
+    2. Celery sends message to RabbitMQ
+    3. RabbitMQ routes message to appropriate queue (`queue_a` or `queue_b`)
+    4. Available worker consumes message from queue
+    5. Worker processes task and stores result
+    6. `result.get()` retrieves result from result backend
+
+45. **What are the key components in the scaling architecture?**
+    - **Message Broker**: RabbitMQ for task distribution
+    - **Task Queues**: `queue_a` and `queue_b` for task routing
+    - **Worker Containers**: Docker containers running Celery workers
+    - **Result Backend**: RPC for storing and retrieving task results
+    - **Dispatcher**: Script that sends tasks and collects results
+
+46. **How does Docker Compose enable horizontal scaling?**
+    - `docker-compose up -d --scale worker-a=3` creates 3 instances
+    - Each instance runs the same worker code
+    - All instances connect to the same RabbitMQ broker
+    - RabbitMQ automatically distributes tasks among them
+
+## ⚖️ **Scaling Limitations & Solutions**
+
+### **Understanding Scaling Challenges**
+47. **Why doesn't scaling always reduce total execution time dramatically?**
+    - Sequential result collection bottleneck
+    - Task execution time vs. network overhead
+    - Docker container overhead
+    - Message routing and serialization costs
+
+48. **What is the sequential result collection bottleneck?**
+    - Each `task.get()` call blocks until that specific task completes
+    - Even with parallel task execution, results are collected one by one
+    - Total time limited by slowest task, not parallel execution capability
+    - This is often the biggest performance limitation
+
+49. **When does horizontal scaling provide the most benefit?**
+    - CPU-intensive tasks (image processing, data analysis)
+    - I/O-bound operations (API calls, database queries)
+    - Long-running tasks (minutes, not seconds)
+    - High-volume processing (thousands of tasks)
+
+50. **What are the main overhead factors in distributed task processing?**
+    - Network latency for message routing
+    - Task serialization/deserialization
+    - Docker container startup and resource allocation
+    - Result retrieval round-trips
+    - Queue management overhead
+
+### **Solution Strategies**
+51. **How would you address the sequential result collection bottleneck?**
+    - Implement parallel result collection using threading
+    - Use asyncio for asynchronous result gathering
+    - Process results in batches to reduce memory usage
+    - Design tasks to minimize result collection needs
+
+52. **What are the trade-offs of different result collection approaches?**
+    - **Sequential**: Simple but slow, limited by slowest task
+    - **Parallel**: Faster but more complex, memory intensive
+    - **Asynchronous**: Most efficient but requires async patterns
+    - **Batch**: Good balance of performance and resource usage
+
+53. **How would you optimize task design for better scaling?**
+    - Increase task complexity to dominate overhead
+    - Use longer execution times for demonstration
+    - Add CPU-intensive work (calculations, processing)
+    - Design for I/O-bound operations (external calls)
+
+54. **What real-world patterns benefit most from horizontal scaling?**
+    - Image/video processing pipelines
+    - Data transformation and ETL jobs
+    - Machine learning inference tasks
+    - External API integration workflows
+    - Batch processing operations
+
+### **Advanced Scaling Concepts**
+55. **How would you implement auto-scaling based on queue depth?**
+    - Monitor queue metrics in real-time
+    - Set thresholds for scaling up/down
+    - Implement gradual scaling to avoid thrashing
+    - Consider both queue depth and worker utilization
+
+56. **What are the challenges of scaling in a production environment?**
+    - Resource contention and limits
+    - Network bandwidth and latency
+    - Database connection pooling
+    - Monitoring and observability at scale
+    - Cost optimization and resource efficiency
+
+57. **How would you handle scaling failures or worker crashes?**
+    - Implement health checks and monitoring
+    - Use circuit breakers for failing workers
+    - Implement graceful degradation
+    - Have fallback mechanisms for critical tasks
+
+58. **What metrics would you monitor to optimize scaling decisions?**
+    - Queue depth and processing rate
+    - Worker CPU and memory utilization
+    - Task execution time distribution
+    - Error rates and retry patterns
+    - Network latency and throughput
+
 ## 🎯 **Evaluation Criteria Alignment**
 
 ### **Correctness**
@@ -303,6 +439,8 @@ This document contains potential interview questions based on the minimal versio
 - **Production Ready**: Retry mechanisms, scaling, monitoring
 - **Comprehensive Testing**: Load testing and performance validation
 - **Documentation**: Clear setup and usage instructions
-- **Scalability**: Horizontal scaling capabilities
+- **Scalability**: Horizontal scaling capabilities with realistic limitations understanding
 - **Reliability**: Error handling and retry mechanisms
 - **Monitoring**: Task execution tracking and metrics
+- **Deep Understanding**: Knowledge of scaling bottlenecks and optimization strategies
+- **Real-World Awareness**: Understanding when and why scaling provides benefits

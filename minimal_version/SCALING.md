@@ -299,6 +299,71 @@ minimal_version-worker-a-2
 minimal_version-worker-a-3
 ```
 
+## Scaling Limitations and Solutions
+
+### **Why Scaling Doesn't Always Reduce Time**
+
+Our test results show that scaling provides throughput improvements but not always dramatic time reductions. Here's why:
+
+#### **1. Sequential Result Collection Bottleneck**
+**Problem**: Even though tasks execute in parallel, we collect results sequentially. Each `task.get()` call blocks until that specific task completes.
+
+**Impact**: This creates a bottleneck where the total time is limited by the slowest task, not the parallel execution capability.
+
+#### **2. Task Execution Time vs. Overhead**
+- **Our tasks**: 0.1-0.2 seconds (very fast)
+- **Network overhead**: Message routing, serialization, round-trips
+- **Docker overhead**: Container startup, resource allocation
+
+**When scaling helps most**:
+- **Longer-running tasks** (minutes, not seconds)
+- **CPU-intensive work** (not just sleep)
+- **Sustained high load** (hundreds of tasks)
+
+#### **3. Network and Infrastructure Overhead**
+- **Message routing**: `dispatch.py` → RabbitMQ → queue → worker
+- **Result retrieval**: Worker → RabbitMQ → `result.get()`
+- **Multiple round-trips** add up for short tasks
+
+### **Proposed Solutions**
+
+#### **Solution 1: Parallel Result Collection**
+- **Concept**: Collect results from multiple tasks simultaneously using threading or multiprocessing
+- **Benefit**: Reduces total collection time from sum of individual times to maximum of individual times
+- **Implementation**: Use ThreadPoolExecutor or asyncio to parallelize `task.get()` calls
+
+#### **Solution 2: Batch Processing**
+- **Concept**: Process results in smaller batches to reduce memory usage and improve efficiency
+- **Benefit**: Better resource management for large task sets
+- **Implementation**: Divide tasks into batches and process each batch in parallel
+
+#### **Solution 3: Asynchronous Result Collection**
+- **Concept**: Use async/await patterns for non-blocking result collection
+- **Benefit**: True asynchronous processing without thread overhead
+- **Implementation**: Use asyncio with `run_in_executor` for Celery task results
+
+#### **Solution 4: Optimize Task Design**
+- **Concept**: Design tasks that benefit more from parallelization
+- **Approaches**: 
+  - Increase task complexity to make execution time dominate overhead
+  - Use longer sleep times for demonstration purposes
+  - Add CPU-intensive work (calculations, data processing)
+  - Design for I/O-bound operations (API calls, database queries)
+
+### **When Scaling Provides Maximum Benefit**
+
+1. **Heavy Computational Tasks**: Image processing, data analysis, ML inference
+2. **External Service Calls**: API requests, database operations
+3. **Long-Running Operations**: File processing, batch jobs
+4. **High-Volume Processing**: Thousands of tasks per minute
+
+### **Real-World Scaling Patterns**
+
+1. **CPU-Intensive Tasks**: Image processing, data analysis, ML inference
+2. **I/O-Bound Operations**: External API calls, database queries, file operations
+3. **Batch Processing**: Processing multiple items in parallel
+4. **Long-Running Jobs**: Data transformation, report generation, ETL processes
+
 ## Best Practices
 
 1. **Monitor Resource Usage**: Watch CPU and memory usage
@@ -306,6 +371,8 @@ minimal_version-worker-a-3
 3. **Gradual Scaling**: Scale up/down gradually to avoid disruption
 4. **Load Testing**: Always test scaling with realistic load
 5. **Resource Limits**: Set appropriate limits in `test-config.yml`
+6. **Optimize Result Collection**: Implement parallel or asynchronous result collection for better performance
+7. **Design for Scale**: Create tasks that benefit from parallelization (CPU-intensive, I/O-bound, or long-running)
 
 ## Troubleshooting
 
