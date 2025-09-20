@@ -7,6 +7,7 @@ import os
 import yaml
 import time
 from celery import Celery
+from celery.exceptions import Retry
 
 def load_config():
     """Load configuration from test-config.yml."""
@@ -48,12 +49,19 @@ app.conf.update(
     broker_url=broker_url,
     result_backend='rpc://',
     task_routes=task_routes,
+    # Retry configuration
+    task_default_retry_delay=60,  # 60 seconds
+    task_max_retries=3,
+    task_retry_jitter=True,
+    task_retry_backoff=True,
+    task_retry_backoff_max=600,  # 10 minutes max
 )
 
-@app.task
-def task_a():
-    """Task A: Returns greeting message with basic monitoring."""
+@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def task_a(self):
+    """Task A: Returns greeting message with retry mechanism."""
     start_time = time.time()
+    retry_count = self.request.retries
     
     # Simulate some work
     time.sleep(0.1)
@@ -61,13 +69,18 @@ def task_a():
     result = "Hello from Task A"
     execution_time = time.time() - start_time
     
-    # Return result with execution time for monitoring
-    return {"result": result, "execution_time": execution_time, "task": "A"}
+    return {
+        "result": result, 
+        "execution_time": execution_time, 
+        "task": "A",
+        "retry_count": retry_count
+    }
 
-@app.task
-def task_b():
-    """Task B: Returns greeting message with basic monitoring."""
+@app.task(bind=True, autoretry_for=(Exception,), retry_kwargs={'max_retries': 3, 'countdown': 5})
+def task_b(self):
+    """Task B: Returns greeting message with retry mechanism."""
     start_time = time.time()
+    retry_count = self.request.retries
     
     # Simulate some work
     time.sleep(0.2)
@@ -75,6 +88,10 @@ def task_b():
     result = "Hello from Task B"
     execution_time = time.time() - start_time
     
-    # Return result with execution time for monitoring
-    return {"result": result, "execution_time": execution_time, "task": "B"}
+    return {
+        "result": result, 
+        "execution_time": execution_time, 
+        "task": "B",
+        "retry_count": retry_count
+    }
 

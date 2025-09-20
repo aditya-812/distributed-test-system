@@ -1,6 +1,15 @@
 # Minimal Distributed Test System
 
-A bare minimum implementation of the distributed test system challenge.
+A clean, production-ready implementation of the distributed test system challenge with retry mechanisms, horizontal scaling, and basic monitoring.
+
+## Features
+
+- ✅ **Core Requirements**: RabbitMQ + Celery + Docker isolation
+- ✅ **Retry Mechanism**: Automatic retries with exponential backoff
+- ✅ **Horizontal Scaling**: Dynamic worker scaling capabilities
+- ✅ **Basic Monitoring**: Task execution timing and retry tracking
+- ✅ **Load Testing**: Built-in performance testing tools
+- ✅ **Configuration**: YAML-based orchestration configuration
 
 ## Requirements
 
@@ -76,18 +85,23 @@ Task A sent with ID: ce70d64d-fb74-4721-be58-0343624e1f15
 Task B sent with ID: 2d726401-9c21-4a2a-8838-d86993c974e9
 Waiting for results...
 Result from task_a: Hello from Task A
-Task A execution time: 0.105s
+Task A execution time: 0.106s
+Task A retries: 0
 Result from task_b: Hello from Task B
-Task B execution time: 0.205s
-Total dispatcher time: 0.292s
+Task B execution time: 0.202s
+Task B retries: 0
+Total dispatcher time: 0.340s (concurrent execution)
+Sequential time would be: 0.307s
+Total retries: 0
 ```
 
-## Monitoring
+## Monitoring & Retries
 
-The system includes basic monitoring features:
+The system includes basic monitoring and retry features:
 - **Task execution timing** - Shows how long each task takes to execute
+- **Retry mechanism** - Automatic retries with exponential backoff (max 3 retries)
+- **Retry tracking** - Shows retry count for each task
 - **Total dispatcher time** - Overall time from dispatch to completion
-- **Task IDs** - Unique identifiers for tracking tasks
 - **Real-time logs** - Use `make monitor` to watch worker logs
 
 ## Horizontal Scaling
@@ -113,19 +127,40 @@ See [SCALING.md](SCALING.md) for detailed scaling documentation.
 
 ## Architecture
 
-- **task_a**: Processed only by worker-a (queue_a)
-- **task_b**: Processed only by worker-b (queue_b)
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   dispatch.py   │    │   RabbitMQ      │    │  Docker Workers │
+│   (Dispatcher)  │────│   (Broker)      │────│                 │
+│                 │    │                 │    │  ┌─────────────┐│
+└─────────────────┘    │  ┌──────────────┤    │  │  Worker A   ││
+                       │  │   queue_a    │◄───┤  │ (task_a)    ││
+                       │  │              │    │  └─────────────┘│
+                       │  ├──────────────┤    │  ┌─────────────┐│
+                       │  │   queue_b    │◄───┤  │  Worker B   ││
+                       │  │              │    │  │ (task_b)    ││
+                       │  └──────────────┘    │  └─────────────┘│
+                       └─────────────────┘    └─────────────────┘
+```
+
+- **task_a**: Processed only by worker-a (queue_a) with retry support
+- **task_b**: Processed only by worker-b (queue_b) with retry support
 - **RabbitMQ**: Message broker running on host
-- **Docker**: Two isolated worker containers
+- **Docker**: Scalable worker containers with horizontal scaling
+- **Retry Logic**: Automatic retries with exponential backoff (max 3 retries)
+- **Monitoring**: Execution timing and retry count tracking
 
 ## Files
 
-- `celery_app.py`: Celery configuration and tasks
-- `dispatch.py`: Simple dispatcher script
+- `celery_app.py`: Celery configuration with retry mechanisms
+- `dispatch.py`: Dispatcher with monitoring and retry tracking
 - `Dockerfile`: Worker container definition
 - `docker-compose.yml`: Container orchestration
-- `requirements.txt`: Python dependencies
-- `test-config.yml`: Orchestration configuration file
+- `requirements.txt`: Python dependencies (celery, pyyaml)
+- `test-config.yml`: Orchestration configuration with scaling settings
+- `scale.py`: Dynamic horizontal scaling script
+- `load_test.py`: Performance testing and load testing tools
+- `SCALING.md`: Comprehensive scaling documentation
+- `Makefile`: Build automation and scaling commands
 
 ## Cleanup
 

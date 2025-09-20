@@ -30,6 +30,12 @@ rabbitmq:
 celery:
   broker_url: "pyamqp://guest@localhost//"
   result_backend: "rpc://"
+  retry_config:
+    max_retries: 3
+    retry_delay: 60
+    retry_backoff: true
+    retry_backoff_max: 600
+    retry_jitter: true
   
 # Task routing configuration
 task_routing:

@@ -6,12 +6,12 @@ A distributed automated test system built with RabbitMQ, Celery, and Docker that
 
 This repository provides **two complete versions** of the distributed test system:
 
-### 📦 **[Minimal Version](./minimal_version/)** - Bare Essentials
-- ✅ **Core requirements only** - Just what's needed to pass the challenge
-- 📝 **~60 lines of code** across 5 files
-- 🚀 **Quick setup** - Get running in minutes
-- 🎓 **Perfect for learning** - Understand the fundamentals
-- 💡 **Simple output**: `Result from task_a: Hello from Task A`
+### 📦 **[Minimal Version](./minimal_version/)** - Clean & Production-Ready
+- ✅ **Core requirements** + retry mechanisms + horizontal scaling
+- 📝 **~500 lines of code** across 10 files with comprehensive features
+- 🚀 **Quick setup** - Get running in minutes with Makefile
+- 🎓 **Perfect for learning** - Clean, well-documented implementation
+- 💡 **Enhanced output**: Execution timing, retry counts, and scaling capabilities
 
 ### 🚀 **[Extended Version](./extended_version/)** - Production Ready
 - ✅ **All core requirements** + advanced features
@@ -320,13 +320,18 @@ print(f'Total time: {time.time() - start:.2f}s')
 
 ```
 distributed-test-system/
-├── 📁 minimal_version/              # Bare essentials implementation
-│   ├── celery_app.py               # Basic Celery config (20 lines)
-│   ├── dispatch.py                 # Simple dispatcher (15 lines)
-│   ├── Dockerfile                  # Basic container (8 lines)
-│   ├── docker-compose.yml          # Simple orchestration (10 lines)
-│   ├── requirements.txt            # Just celery (1 line)
-│   └── README.md                   # Minimal setup guide
+├── 📁 minimal_version/              # Clean production-ready implementation
+│   ├── celery_app.py               # Celery config with retries (98 lines)
+│   ├── dispatch.py                 # Dispatcher with monitoring (43 lines)
+│   ├── Dockerfile                  # Worker container (12 lines)
+│   ├── docker-compose.yml          # Container orchestration (8 lines)
+│   ├── requirements.txt            # Dependencies (2 lines)
+│   ├── test-config.yml             # Configuration (44 lines)
+│   ├── scale.py                    # Horizontal scaling (113 lines)
+│   ├── load_test.py                # Load testing (113 lines)
+│   ├── SCALING.md                  # Scaling documentation (177 lines)
+│   ├── Makefile                    # Build automation (79 lines)
+│   └── README.md                   # Comprehensive guide
 ├── 📁 extended_version/             # Production-ready implementation
 │   ├── celery_app.py               # Advanced config + logging (165 lines)
 │   ├── dispatch.py                 # Rich visualization (250 lines)

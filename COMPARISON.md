@@ -1,32 +1,53 @@
 # Distributed Test System - Full vs Minimal Comparison
 
-## 🎯 **MINIMAL VERSION - BARE MINIMUM**
+## 🎯 **MINIMAL VERSION - CLEAN & PRODUCTION-READY**
 
 Located in `/minimal_version/` directory.
 
-### **Core Requirements Only ✅**
-- **RabbitMQ Integration**: ✅ Basic connection
-- **Two Celery Tasks**: ✅ Simple `task_a` and `task_b`
+### **Core Requirements + Essential Features ✅**
+- **RabbitMQ Integration**: ✅ Robust connection with configuration
+- **Two Celery Tasks**: ✅ `task_a` and `task_b` with retry mechanisms
 - **Container Isolation**: ✅ Each worker processes only its task
-- **Concurrent Dispatcher**: ✅ Basic concurrent execution
+- **Concurrent Dispatcher**: ✅ Concurrent execution with monitoring
+- **Retry Logic**: ✅ Automatic retries with exponential backoff
+- **Horizontal Scaling**: ✅ Dynamic worker scaling capabilities
+- **Load Testing**: ✅ Built-in performance testing tools
+- **Configuration**: ✅ YAML-based orchestration
 
-### **Files (5 total)**
+### **Files (10 total)**
 ```
 minimal_version/
-├── celery_app.py          # 20 lines - Basic Celery config + tasks
-├── dispatch.py            # 15 lines - Simple dispatcher
-├── Dockerfile             # 8 lines - Basic container
-├── docker-compose.yml     # 10 lines - Simple orchestration
-├── requirements.txt       # 1 line - Only celery
-└── README.md              # Basic setup instructions
+├── celery_app.py          # 98 lines - Celery config with retries
+├── dispatch.py            # 43 lines - Dispatcher with monitoring
+├── Dockerfile             # 12 lines - Worker container
+├── docker-compose.yml     # 8 lines - Container orchestration
+├── requirements.txt       # 2 lines - Dependencies (celery, pyyaml)
+├── test-config.yml        # 44 lines - Configuration with scaling
+├── scale.py               # 113 lines - Horizontal scaling script
+├── load_test.py           # 113 lines - Load testing tools
+├── SCALING.md             # 177 lines - Scaling documentation
+├── Makefile               # 79 lines - Build automation
+└── README.md              # Comprehensive setup guide
 ```
 
 ### **Output**
 ```bash
 $ python dispatch.py
+Loaded config: Basic two-task execution test
+Expected workers: 2
 Dispatching tasks...
+Task A sent with ID: 4f097dd5-1341-4385-b471-d28dd7b3bae5
+Task B sent with ID: c793b68b-8541-469b-ae9f-518f1452c2eb
+Waiting for results...
 Result from task_a: Hello from Task A
+Task A execution time: 0.106s
+Task A retries: 0
 Result from task_b: Hello from Task B
+Task B execution time: 0.202s
+Task B retries: 0
+Total dispatcher time: 0.340s (concurrent execution)
+Sequential time would be: 0.307s
+Total retries: 0
 ```
 
 ---
@@ -129,28 +150,33 @@ Slowest Task: 0.702s
 | Feature | Minimal Version | Full Version |
 |---------|----------------|--------------|
 | **Core Requirements** | ✅ | ✅ |
-| **Lines of Code** | ~60 | ~1200+ |
-| **Dependencies** | 1 | 4 |
-| **Visualization** | None | Rich colored output |
-| **Logging** | Basic | Structured JSON |
-| **Error Handling** | Basic | Comprehensive |
-| **Performance Metrics** | None | Detailed timing |
-| **Health Checks** | None | Full monitoring |
+| **Lines of Code** | ~500 | ~1200+ |
+| **Dependencies** | 2 | 4 |
+| **Retry Mechanism** | ✅ Exponential backoff | ✅ Advanced retry logic |
+| **Horizontal Scaling** | ✅ Dynamic scaling | ❌ Not implemented |
+| **Load Testing** | ✅ Built-in tools | ❌ Basic only |
+| **Configuration** | ✅ YAML-based | ✅ YAML-based |
+| **Visualization** | Basic monitoring | Rich colored output |
+| **Logging** | Basic timing | Structured JSON |
+| **Error Handling** | Retry-focused | Comprehensive |
+| **Performance Metrics** | Execution timing | Detailed timing + stats |
+| **Health Checks** | Basic | Full monitoring |
 | **Result Persistence** | None | JSON files |
-| **Setup Automation** | Manual | Interactive script |
-| **Documentation** | Basic | Comprehensive |
-| **Production Ready** | No | Yes |
+| **Setup Automation** | Makefile | Interactive script |
+| **Documentation** | Comprehensive | Comprehensive |
+| **Production Ready** | ✅ Yes | ✅ Yes |
 
 ---
 
 ## 🎯 **WHEN TO USE WHICH VERSION**
 
 ### **Use Minimal Version When:**
-- Learning Celery basics
-- Quick prototyping
-- Simple proof of concept
-- Educational purposes
-- Minimal resource requirements
+- Learning distributed systems with Celery
+- Production deployment with scaling needs
+- Clean, maintainable codebase preferred
+- Horizontal scaling is important
+- Load testing capabilities needed
+- YAML-based configuration preferred
 
 ### **Use Full Version When:**
 - Production deployment

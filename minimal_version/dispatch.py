@@ -27,13 +27,16 @@ def main():
     
     total_time = time.time() - start_time
     
-    # Display results with monitoring information
+    # Display results with retry information
     print(f"Result from task_a: {result_from_a['result']}")
     print(f"Task A execution time: {result_from_a['execution_time']:.3f}s")
+    print(f"Task A retries: {result_from_a['retry_count']}")
     print(f"Result from task_b: {result_from_b['result']}")
     print(f"Task B execution time: {result_from_b['execution_time']:.3f}s")
+    print(f"Task B retries: {result_from_b['retry_count']}")
     print(f"Total dispatcher time: {total_time:.3f}s (concurrent execution)")
     print(f"Sequential time would be: {result_from_a['execution_time'] + result_from_b['execution_time']:.3f}s")
+    print(f"Total retries: {result_from_a['retry_count'] + result_from_b['retry_count']}")
 
 if __name__ == '__main__':
     main()
