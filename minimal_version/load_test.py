@@ -4,12 +4,27 @@ Load testing script to demonstrate horizontal scaling benefits.
 Sends multiple tasks to test worker capacity and scaling.
 """
 import time
+import subprocess
 from celery_app import task_a, task_b, config
+
+def get_actual_worker_count():
+    """Get the actual number of running worker containers."""
+    try:
+        result = subprocess.run(['docker-compose', 'ps', '--filter', 'status=running'], 
+                              capture_output=True, text=True, check=True)
+        lines = result.stdout.strip().split('\n')
+        # Count lines that contain worker containers (skip header)
+        worker_containers = [line for line in lines if 'worker-' in line and 'Up' in line]
+        return len(worker_containers)
+    except subprocess.CalledProcessError:
+        return 0
 
 def run_load_test(num_tasks: int = 20):
     """Run load test by sending multiple tasks of each type."""
+    actual_workers = get_actual_worker_count()
     print(f"Starting load test with {num_tasks} tasks of each type...")
-    print(f"Expected workers: {config['system']['workers']}")
+    print(f"Running workers: {actual_workers}")
+    print(f"Config workers: {config['system']['workers']}")
     print("-" * 50)
     
     start_time = time.time()
