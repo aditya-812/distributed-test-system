@@ -1,0 +1,25 @@
+{
+    "name": "Distributed Test System",
+    "image": "python:3.11-slim",
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "postCreateCommand": "apt-get update && apt-get install -y make git curl docker.io docker-compose && pip install --upgrade pip && pip install -r requirements.txt",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.flake8"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.terminal.activateEnvironment": false
+            }
+        }
+    },
+    "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    ],
+    "runArgs": [
+        "--network=host"
+    ]
+}
